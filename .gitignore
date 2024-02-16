@@ -1,0 +1,4 @@
+demo-resources/configuring-microsoft-sentinel-for-cloud-nss-based-log-ingestion/test-file-no-commit.ps1
+.DS_Store
+*.test
+test/
