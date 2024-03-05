@@ -6,9 +6,9 @@
 // 4. Configure your Cloud NSS feed in the Zscaler Portal.
 
 // These resources need to be pre-configured
-param resoureGroup string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Location
+param resoureGroup string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Resource group
 param workspaceName string = 'xxx' // The name of your Log Analytics workspace
-param location string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Location
+param location string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Location. I.e. 'australiaeast' (no spaces)
 param subscriptionId string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Subscription ID
 param workspaceId string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Workspace ID
 
