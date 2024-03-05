@@ -29,6 +29,9 @@ resource dce 'Microsoft.Insights/dataCollectionEndpoints@2022-06-01' = {
 }
 
 resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
+  dependsOn: [
+    dce // This line ensures dcr creation waits for dce to be fully deployed
+  ]
   properties: {
     dataCollectionEndpointId: '/subscriptions/${subscriptionId}/resourceGroups/${resoureGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/${dceName}'
     streamDeclarations: {
