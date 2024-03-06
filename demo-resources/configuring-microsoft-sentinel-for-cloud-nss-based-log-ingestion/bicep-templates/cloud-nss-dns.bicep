@@ -1,20 +1,45 @@
-// This creates both the DCR and DCE's needed to ingest data into Sentinel from Zscaler's Cloud NSS capability.
-// Steps needed to deploy
-// 1. Create an App Registration as per the DG/Storylane demo
-// 2. To run this script install bicep (if not already installed) and run the following command - New-AzResourceGroupDeployment -ResourceGroupName "<resource group containing your log analytics workspace>" -TemplateFile "cloud-nss-dns.bicep"
-// 3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created create.
-// 4. Configure your Cloud NSS feed in the Zscaler Portal.
+/* 
+This creates both the DCR and DCE's needed to ingest data into Sentinel from Zscaler's Cloud NSS capability.
+Steps needed to deploy:
+1. Create an App Registration as per the Deployment Guide or Storylane demo
+2. Run this script from Azure CLI using the following command:
+
+  az stack group create --name cloud-nss-dns --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-dns.bicep --deny-settings-mode 'none'
+
+  You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item.
+  
+  Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-web.bicepparams file and running the following command in Azure CLI to deploy:
+
+  az stack group create --name cloud-nss-dns --resource-group <resource group containing your log analytics workspace> --parameters cloud-nss-dns.bicepparam --deny-settings-mode 'none'
+
+3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created earlier.
+4. Configure your Cloud NSS feed in the Zscaler Portal. You can retrieve the feed API URL using the following command in Azure CLI:
+
+   az stack group show -g <resouce group containing your log analytics workspace> -n cloud-nss-dns --query outputs.api_url
+
+5. If you ever need to delete the deployment, you can run the following command from Azure CLI:
+
+  az stack group delete --name cloud-nss-dns --resource-group <resouce group containing your log analytics workspace> --delete-resources
+
+*/
 
 // These resources need to be pre-configured
-param resoureGroup string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Resource group
-param workspaceName string = 'xxx' // The name of your Log Analytics workspace
-param location string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Location. I.e. 'australiaeast' (no spaces)
-param subscriptionId string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Subscription ID
-param workspaceId string = 'xxx' // Found under Log Analytics workspace -> your workspace -> Overview -> Workspace ID
+@description('Found under Log Analytics workspace -> your workspace -> Overview -> Resource group')
+param resourceGroup string // Found under Log Analytics workspace -> your workspace -> Overview -> Resource group
+@description('The name of your Log Analytics workspace')
+param workspaceName string
+@description('Found under Log Analytics workspace -> your workspace -> Overview -> JSON View -> location. I.e. australiaeast')
+param location string
+@description('Found under Log Analytics workspace -> your workspace -> Overview -> Subscription ID')
+param subscriptionId string
+@description('Found under Log Analytics workspace -> your workspace -> Overview -> Workspace ID')
+param workspaceId string
 
 // These resources are configured through bicep
-param dceName string = 'xxx'
-param dcrName string = 'xxx'
+@description('Name of Data Collection Endpoint the template will create')
+param dceName string
+@description('Name of the Data Collection Rule the template will create')
+param dcrName string
 
 resource dce 'Microsoft.Insights/dataCollectionEndpoints@2022-06-01' = {
   properties: {
@@ -29,11 +54,8 @@ resource dce 'Microsoft.Insights/dataCollectionEndpoints@2022-06-01' = {
 }
 
 resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
-  dependsOn: [
-    dce // This line ensures dcr creation waits for dce to be fully deployed
-  ]
   properties: {
-    dataCollectionEndpointId: '/subscriptions/${subscriptionId}/resourceGroups/${resoureGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/${dceName}'
+    dataCollectionEndpointId: dce.id
     streamDeclarations: {
       'Custom-nss_dns_CL': {
         columns: [
@@ -172,7 +194,7 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
     destinations: {
       logAnalytics: [
         {
-          workspaceResourceId: '/subscriptions/${subscriptionId}/resourcegroups/${resoureGroup}/providers/microsoft.operationalinsights/workspaces/${workspaceName}'
+          workspaceResourceId: resourceId(subscriptionId, resourceGroup, 'microsoft.operationalinsights/workspaces', workspaceName)
           name: workspaceId
         }
       ]
@@ -193,3 +215,6 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
   location: location
   name: dcrName
 }
+
+// Store feed api url in template output
+output api_url string = '${dce.properties.logsIngestion.endpoint}/dataCollectionRules/${dcr.properties.immutableId}/streams/Custom-nss_dns_CL?api-version=2022-06-01'
