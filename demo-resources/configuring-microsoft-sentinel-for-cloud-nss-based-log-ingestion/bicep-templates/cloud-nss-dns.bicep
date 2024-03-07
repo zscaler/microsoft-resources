@@ -217,4 +217,4 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
 }
 
 // Store feed api url in template output
-output api_url string = '${dce.properties.logsIngestion.endpoint}/dataCollectionRules/${dcr.properties.immutableId}/streams/Custom-nss_dns_CL?api-version=2022-06-01'
+output api_url string = '${dce.properties.logsIngestion.endpoint}/dataCollectionRules/${dcr.properties.immutableId}/streams/Custom-nss_dns_CL?api-version=2021-11-01-preview'
