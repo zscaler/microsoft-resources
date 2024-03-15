@@ -4,11 +4,11 @@ Steps needed to deploy:
 1. Create an App Registration as per the Deployment Guide or Storylane demo
 2. Run this script from Azure CLI using the following command:
 
-  az stack group create --name cloud-nss-admin-audit --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-web.bicep --deny-settings-mode 'none'
+  az stack group create --name cloud-nss-admin-audit --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-admin-audit.bicep --deny-settings-mode 'none'
 
   You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item.
   
-  Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-web.bicepparams file and running the following command in Azure CLI to deploy:
+  Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-admin-audit.bicepparams file and running the following command in Azure CLI to deploy:
 
   az stack group create --name cloud-nss-admin-audit --resource-group  <resource group containing your log analytics workspace> --parameters cloud-nss-admin-audit.bicepparam --deny-settings-mode 'none'
 
