@@ -10,7 +10,7 @@ Steps needed to deploy:
   
   Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-web.bicepparams file and running the following command in Azure CLI to deploy:
 
-  az stack group create --name cloud-nss-admin-audit --resource-group rg-sentinel-cloud-admin-audit --parameters cloud-nss-admin-audit.bicepparam --deny-settings-mode 'none'
+  az stack group create --name cloud-nss-admin-audit --resource-group  <resource group containing your log analytics workspace> --parameters cloud-nss-admin-audit.bicepparam --deny-settings-mode 'none'
 
 3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created earlier.
 4. Configure your Cloud NSS feed in the Zscaler Portal. You can retrieve the feed API URL using the following command in Azure CLI:
@@ -19,7 +19,7 @@ Steps needed to deploy:
 
 5. If you ever need to delete the deployment, you can run the following command from Azure CLI:
 
-  az stack group delete --name cloud-nss-admin-audit --resource-group rg-sentinel-cloud-admin-audit --delete-resources
+  az stack group delete --name cloud-nss-admin-audit --resource-group <resource group containing your log analytics workspace> --delete-resources
 
 */
 
