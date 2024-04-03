@@ -1,0 +1,15 @@
+Tunnel logs - IKE Phase 1
+
+%s{mon} %02d{dd} %02d{hh}:%02d{mm}:%02d{ss} zscaler-nss-tunnel CEF:0|Zscaler|NSSTunnellog|5.7|%s{tunnelactionname}|%s{destvip}|3| dpt=%d{dstport} cn1Label=ikeversion cn1=%d{ikeversion} cfp1Label=lifetime cfp1=%d{lifetime} spt=%d{srcport} spi_in=%lu{spi_in} spi_out=%lu{spi_out} cs1Label=algo cs1=%s{algo} cs2Label=authentication cs2=%s{authentication} cs3Label=authtype cs3=%s{authtype} dst=%s{destvip} cs4Label=locationname cs4=%s{locationname} src=%s{sourceip} deviceEventClassId=%s{tunnelactionname} vendorname=%s{vendorname} suser=%s{vpncredentialname} deviceExternalId=%d{recordid} olocationname=%s{olocationname} ovpncredentialname=%s{ovpncredentialname} dtz=%s{tz}\n
+
+Tunnel logs - IKE Phase 2
+
+%s{mon} %02d{dd} %02d{hh}:%02d{mm}:%02d{ss} zscaler-nss-tunnel CEF:0|Zscaler|NSSTunnellog|5.7|%s{tunnelactionname}|%s{tunnelprotocol}|3| destipstart=%s{destipstart} dst=%s{destvip} cs4Label=locationname cs4=%s{locationname} proto=%s{protocol} src=%s{sourceip} srcipend=%s{srcipend} srcipstart=%s{srcipstart} deviceEventClassId=%s{tunnelactionname} proto=%s{protocol} suser=%s{vpncredentialname} destportstart=%d{destportstart} cn1Label=ikeversion cn1=%d{ikeversion} lifebytes=%d{lifebytes} cfp1Label=lifetime cfp1=%d{lifetime} spi=%d{spi} srcportstart=%d{srcportstart} cs1Label=algo cs1=%s{algo} cs2Label=authentication cs2=%s{authentication} cs3Label=authtype cs3=%s{authtype} destipend=%s{destipend} \n
+
+Tunnel Events
+
+%s{mon} %02d{dd} %02d{hh}:%02d{mm}:%02d{ss} zscaler-nss-tunnel CEF:0|Zscaler|NSSTunnellog|5.7|%s{tunnelactionname}|%s{event}|3| spt=%d{srcport} dst=%s{destvip} name=%s{event} reason=%s{eventreason} cs4Label=locationname cs4=%s{locationname} src=%s{sourceip} deviceEventClassId=%s{tunnelactionname} cs5Label=tunneltype cs5=%s{tunneltype} suser=%s{vpncredentialname} deviceExternalId=%d{recordid} olocationname=%s{olocationname} ovpncredentialname=%s{ovpncredentialname} dtz=%s{tz} \n
+
+Tunnel Samples
+
+%s{mon} %02d{dd} %02d{hh}:%02d{mm}:%02d{ss} zscaler-nss-tunnel CEF:0|Zscaler|NSSTunnellog|5.7|%s{tunnelactionname}|%s{tunneltype}|3| spt=%d{srcport} cn2Label=rxpackets cn2=%d{rxpackets} cn3Label=txpackets cn3=%d{txpackets} dpdrec=%d{dpdrec} in=%lu{rxbytes} out=%lu{txbytes} dst=%s{destvip} cs4Label=locationname cs4=%s{locationname} src=%s{sourceip} deviceEventClassId=%s{tunnelactionname} cs5Label=tunneltype cs5=%s{tunneltype} suser=%s{vpncredentialname} deviceExternalId=%d{recordid} olocationname=%s{olocationname} ovpncredentialname=%s{ovpncredentialname} dtz=%s{tz} \n
