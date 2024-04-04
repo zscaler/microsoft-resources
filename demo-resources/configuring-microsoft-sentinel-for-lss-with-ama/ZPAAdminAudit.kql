@@ -1,0 +1,16 @@
+ZPA_CL
+| extend ParsedData = parse_json(Message)
+| where Message contains "AuditOldValue"
+| project
+    EventVendor="Zscaler",
+    EventProduct="Private Access",
+    ModifiedTime = ParsedData.ModifiedTime,
+    CreationTime = ParsedData.CreationTime,
+    ModifiedBy = ParsedData.ModifiedBy,
+    RequestID = ParsedData.RequestID,
+    SessionID = ParsedData.SessionID,
+    AuditOldValue = tostring(ParsedData.AuditOldValue),
+    AuditNewValue = tostring(ParsedData.AuditNewValue),
+    ObjectType = ParsedData.ObjectType,
+    User = ParsedData.User,
+    Message = Message

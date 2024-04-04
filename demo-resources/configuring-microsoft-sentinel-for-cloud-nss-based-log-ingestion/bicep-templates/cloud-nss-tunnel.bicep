@@ -10,7 +10,7 @@ Steps needed to deploy:
   
   Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-web.bicepparams file and running the following command in Azure CLI to deploy:
 
-  az stack group create --name cloud-nss-tunnel --resource-group rg-sentinel-cloud-tunnel --parameters cloud-nss-tunnel.bicepparam --deny-settings-mode 'none'
+  az stack group create --name cloud-nss-tunnel-validate --resource-group rg-sentinel-cloud-tunnel-validate --parameters cloud-nss-tunnel.bicepparam --deny-settings-mode 'none'
 
 3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created earlier.
 4. Configure your Cloud NSS feed in the Zscaler Portal. You can retrieve the feed API URL using the following command in Azure CLI:
@@ -19,7 +19,7 @@ Steps needed to deploy:
 
 5. If you ever need to delete the deployment, you can run the following command from Azure CLI:
 
-  az stack group delete --name cloud-nss-tunnel --resource-group rg-sentinel-cloud-tunnel --delete-resources
+  az stack group delete --name cloud-nss-tunnel-validate --resource-group rg-sentinel-cloud-tunnel-validate --delete-resources
 
 */
 
@@ -258,7 +258,11 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
           {
             name: 'suser'
             type: 'string'
-          }     
+          }
+          {
+            name: 'vendorname'
+            type: 'string'
+          } 
         ] 
       }
     }
@@ -279,7 +283,7 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
         destinations: [
           workspaceId
         ]
-        transformKql: 'source | project TimeGenerated, DeviceVendor=tostring(vendor), DeviceProduct=tostring(product), DeviceVersion=tostring(version), LogSeverity=tostring(severity), Activity=tostring(name),DeviceEventClassID=tostring(deviceEventClassId), DeviceExternalID=tostring(deviceExternalId), DestinationPort=toint(dpt), DestinationIP=tostring(dst), DeviceTimeZone=tostring(dtz), ReceivedBytes=tolong(inbytes), SentBytes=tolong(out), Protocol=tostring(proto), Reason=tostring(reason), SourcePort=toint(spt), SourceIP=tostring(src), SourceUserName=tostring(suser), DeviceCustomFloatingPoint1=toreal(cfp1), deviceCustomFloatingPoint1Label=tostring(cfp1Label), DeviceCustomNumber1=toint(cn1), DeviceCustomNumber1Label=tostring(cn1Label), DeviceCustomNumber2=toint(cn2), DeviceCustomNumber2Label=tostring(cn2Label), DeviceCustomNumber3=toint(cn3), DeviceCustomNumber3Label=tostring(cn3Label), DeviceCustomString1=tostring(cs1), DeviceCustomString1Label=tostring(cs1Label), DeviceCustomString2=tostring(cs2), DeviceCustomString2Label=tostring(cs2Label), DeviceCustomString3=tostring(cs3), DeviceCustomString3Label=tostring(cs3Label), DeviceCustomString4=tostring(cs4), DeviceCustomString4Label=tostring(cs4Label), DeviceCustomString5=tostring(cs5), DeviceCustomString5Label=tostring(cs5Label)"\n'
+        transformKql:  'source | project TimeGenerated, DeviceVendor=tostring(vendor), DeviceProduct=tostring(product), DeviceVersion=tostring(version), LogSeverity=tostring(severity), Activity=tostring(name),DeviceEventClassID=tostring(deviceEventClassId), DeviceExternalID=tostring(deviceExternalId), DestinationPort=toint(dpt), DestinationIP=tostring(dst), DeviceTimeZone=tostring(dtz), ReceivedBytes=tolong(inbytes), SentBytes=tolong(out), Protocol=tostring(proto), Reason=tostring(reason), SourcePort=toint(spt), SourceIP=tostring(src), SourceUserName=tostring(suser), DeviceCustomFloatingPoint1=toreal(cfp1), DeviceCustomFloatingPoint1Label=tostring(cfp1Label), DeviceCustomNumber1=toint(cn1), DeviceCustomNumber1Label=tostring(cn1Label), DeviceCustomNumber2=toint(cn2), DeviceCustomNumber2Label=tostring(cn2Label), DeviceCustomNumber3=toint(cn3), DeviceCustomNumber3Label=tostring(cn3Label), DeviceCustomString1=tostring(cs1), DeviceCustomString1Label=tostring(cs1Label), DeviceCustomString2=tostring(cs2), DeviceCustomString2Label=tostring(cs2Label), DeviceCustomString3=tostring(cs3), DeviceCustomString3Label=tostring(cs3Label), DeviceCustomString4=tostring(cs4), DeviceCustomString4Label=tostring(cs4Label), DeviceCustomString5=tostring(cs5), DeviceCustomString5Label=tostring(cs5Label), AdditionalExtensions = case(deviceEventClassId == "Tunnel Samples", strcat("dpdrec=",dpdrec,";olocationname=", olocationname, ";ovpncredentialname=", ovpncredentialname), deviceEventClassId == "Tunnel Event", strcat("olocationname=",olocationname,";ovpncredentialname=",ovpncredentialname), deviceEventClassId == "IPSec Phase2", strcat("destipstart=",destipstart,";srcipend=",srcipend,";srcipstart=",srcipstart,";destportstart=",destportstart,";lifebytes=",lifebytes,";spi=",spi,";srcportstart=",srcportstart,";destipend=",destipend), strcat("spi_in=",spi_in,";spi_out=",spi_out,";vendorname=",vendorname,";olocationname=",olocationname,";ovpncredentialname=",ovpncredentialname))\n'
         outputStream: 'Microsoft-CommonSecurityLog'
       }
   
