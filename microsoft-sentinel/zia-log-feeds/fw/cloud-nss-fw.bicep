@@ -5,22 +5,22 @@ Steps needed to deploy:
 1. Create an App Registration as per the Deployment Guide or Storylane demo
 2. Run this script from Azure CLI using the following command:
 
-    az stack group create --name cloud-nss-fw --resource-group rg-sentinel-cloud-fw --template-file ./cloud-nss-fw.bicep --deny-settings-mode 'none'
+    az stack group create --name cloud-nss-fw --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-fw.bicep --deny-settings-mode 'none'
 
   You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item.
   
   Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-fw.bicepparams file and running the following command in Azure CLI to deploy:
 
-    az stack group create --name cloud-nss-fw --resource-group rg-sentinel-cloud-fw --parameters cloud-nss-fw.bicepparam --deny-settings-mode 'none'
+    az stack group create --name cloud-nss-fw --resource-group <resource group containing your log analytics workspace> --parameters cloud-nss-fw.bicepparam --deny-settings-mode 'none'
 
 3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created earlier.
 4. Configure your Cloud NSS feed in the Zscaler Portal. You can retrieve the feed API URL using the following command in Azure CLI:
 
-    az stack group show -g rg-sentinel-cloud-fw -n cloud-nss-fw --query outputs.api_url
+    az stack group show -g <resource group containing your log analytics workspace> -n cloud-nss-fw --query outputs.api_url
 
 5. If you ever need to delete the deployment, you can run the following command from Azure CLI:
 
-    az stack group delete --name cloud-nss-fw --resource-group rg-sentinel-cloud-fw --delete-resources
+    az stack group delete --name cloud-nss-fw --resource-group <resource group containing your log analytics workspace> --delete-resources
 
 */ 
 // These resources need to be pre-configured
