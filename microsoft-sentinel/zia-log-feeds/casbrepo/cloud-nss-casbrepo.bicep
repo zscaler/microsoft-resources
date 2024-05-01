@@ -196,10 +196,6 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
 	  type: 'string'
 	}
 	{
-	  name: 'internal_collabnames'
-	  type: 'string'
-	}
-	{
 	  name: 'flexString1Label'
 	  type: 'string'
 	}
@@ -233,10 +229,6 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
 	}
 	{
 	  name: 'ofileid'
-	  type: 'string'
-	}
-	{
-	  name: 'ointernal_collabnames'
 	  type: 'string'
 	}
 	{
@@ -327,7 +319,7 @@ resource dcr 'Microsoft.Insights/dataCollectionRules@2022-06-01' = {
       destinations: [
         workspaceId
       ]
-        transformKql: 'source | project TimeGenerated, DeviceVendor=tostring(vendor), DeviceProduct=tostring(product), DeviceVersion=tostring(version), LogSeverity=tostring(Severity), Activity=tostring(name), DeviceEventClassID=tostring(deviceEventClassId), DeviceAction=tostring(act), DeviceCustomString1=tostring(cs1), DeviceCustomString1Label=tostring(cs1Label), FileSize=toint(fsize), DeviceCustomNumber1=toint(cn1), DeviceCustomNumber1Label=tostring(cn1Label), deviceExternalId=tostring(deviceExternalId), DeviceCustomString2=tostring(cs2), DeviceCustomString2Label=tostring(cs2Label), DeviceCustomString3=tostring(cs3), DeviceCustomString3Label=tostring(cs3Label), DeviceCustomString4=tostring(cs4), DeviceCustomString4Label=tostring(cs4Label), FileID=tostring(fileId), FileHash=tostring(fileHash), FileName=tostring(fname), FilePath=tostring(filePath), FileType=tostring(fileType), FlexString1Label=tostring(flexString1Label), FlexString1=tostring(flexString1), FlexString2Label=tostring(flexString2Label), FlexString2=tostring(flexString2), SourceUserName=tostring(suser), DeviceCustomString5=tostring(cs5), DeviceCustomString5Label=tostring(cs5Label), DeviceCustomString6=tostring(cs6), DeviceCustomString6Label=tostring(cs6Label), DeviceCustomDate1Label=tostring(deviceCustomDate1Label), DeviceCustomDate1=tostring(deviceCustomDate1), DeviceTimeZone=tostring(dtz), AdditionalExtensions = strcat("start=",start,";company=",company,";datacenter=",datacenter,";datacentercity=",datacentercity,";datacentercountry=",datacentercountry,";department=",department,";external_collabnames=",external_collabnames,";extownername=",extownername,";internal_collabnames=",internal_collabnames,";odlpdictnames=",odlpdictnames,";odlpenginenames=",odlpenginenames,";oexternal_collabnames=",oexternal_collabnames,";oextownername=",oextownername,";ofileid=",ofileid,";ointernal_collabnames=",ointernal_collabnames,";oowner=",oowner,";orulelabel=",orulelabel,";otenant=",otenant,";projectname=",projectname,";reponame=",reponame,";agentSeverity=",agentSeverity,";tenant=",tenant,";threatname=",threatname,";upload_doctypename=",upload_doctypename)'
+        transformKql: 'source | project TimeGenerated, DeviceVendor=tostring(vendor), DeviceProduct=tostring(product), DeviceVersion=tostring(version), LogSeverity=tostring(Severity), Activity=tostring(name), DeviceEventClassID=tostring(deviceEventClassId), DeviceAction=tostring(act), DeviceCustomString1=tostring(cs1), DeviceCustomString1Label=tostring(cs1Label), FileSize=toint(fsize), DeviceCustomNumber1=toint(cn1), DeviceCustomNumber1Label=tostring(cn1Label), deviceExternalId=tostring(deviceExternalId), DeviceCustomString2=tostring(cs2), DeviceCustomString2Label=tostring(cs2Label), DeviceCustomString3=tostring(cs3), DeviceCustomString3Label=tostring(cs3Label), DeviceCustomString4=tostring(cs4), DeviceCustomString4Label=tostring(cs4Label), FileID=tostring(fileId), FileHash=tostring(fileHash), FileName=tostring(fname), FilePath=tostring(filePath), FileType=tostring(fileType), FlexString1Label=tostring(flexString1Label), FlexString1=tostring(flexString1), FlexString2Label=tostring(flexString2Label), FlexString2=tostring(flexString2), SourceUserName=tostring(suser), DeviceCustomString5=tostring(cs5), DeviceCustomString5Label=tostring(cs5Label), DeviceCustomString6=tostring(cs6), DeviceCustomString6Label=tostring(cs6Label), DeviceCustomDate1Label=tostring(deviceCustomDate1Label), DeviceCustomDate1=tostring(deviceCustomDate1), DeviceTimeZone=tostring(dtz), AdditionalExtensions = strcat("start=",start,";company=",company,";datacenter=",datacenter,";datacentercity=",datacentercity,";datacentercountry=",datacentercountry,";department=",department,";external_collabnames=",external_collabnames,";extownername=",extownername,";odlpdictnames=",odlpdictnames,";odlpenginenames=",odlpenginenames,";oexternal_collabnames=",oexternal_collabnames,";oextownername=",oextownername,";ofileid=",ofileid,";oowner=",oowner,";orulelabel=",orulelabel,";otenant=",otenant,";projectname=",projectname,";reponame=",reponame,";agentSeverity=",agentSeverity,";tenant=",tenant,";threatname=",threatname,";upload_doctypename=",upload_doctypename)'
 
         outputStream: 'Microsoft-CommonSecurityLog'
       }
