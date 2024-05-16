@@ -1,6 +1,6 @@
 ZPA_CL
 | extend ParsedData = parse_json(Message)
-| where Message contains "AppCount"
+| where isnotnull(ParsedData.AppCount)
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",

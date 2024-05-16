@@ -1,6 +1,6 @@
 ZPA_CL
 | extend ParsedData = parse_json(Message)
-| where Message contains "ConnectorGroup"
+| where isnotnull(ParsedData.ConnectorGroup)
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",

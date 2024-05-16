@@ -1,0 +1,22 @@
+ZPA_CL
+| extend ParsedData = parse_json(Message)
+| where isnotnull(ParsedData.PrivateSE)
+| project
+    EventVendor="Zscaler",
+    EventProduct="Private Access",
+    LogTimestamp = todatetime(ParsedData.LogTimestamp),
+    PrivateSE = tostring(ParsedData.PrivateSE),
+    CPUUtilization = todouble(ParsedData.CPUUtilization),
+    SystemMemoryUtilization = todouble(ParsedData.SystemMemoryUtilization),
+    ProcessMemoryUtilization = todouble(ParsedData.ProcessMemoryUtilization),
+    UsedTCPPortsIPv4 = toint(ParsedData.UsedTCPPortsIPv4),
+    UsedUDPPortsIPv4 = toint(ParsedData.UsedUDPPortsIPv4),
+    UsedTCPPortsIPv6 = toint(ParsedData.UsedTCPPortsIPv6),
+    UsedUDPPortsIPv6 = toint(ParsedData.UsedUDPPortsIPv6),
+    AvailablePorts = toint(ParsedData.AvailablePorts),
+    SystemMaximumFileDescriptors = toint(ParsedData.SystemMaximumFileDescriptors),
+    SystemUsedFileDescriptors = toint(ParsedData.SystemUsedFileDescriptors),
+    ProcessMaximumFileDescriptors = toint(ParsedData.ProcessMaximumFileDescriptors),
+    ProcessUsedFileDescriptors = toint(ParsedData.ProcessUsedFileDescriptors),
+    AvailableDiskBytes = tolong(ParsedData.AvailableDiskBytes),
+    Message = Message;

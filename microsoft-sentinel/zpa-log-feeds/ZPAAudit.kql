@@ -1,6 +1,6 @@
 ZPA_CL
 | extend ParsedData = parse_json(Message)
-| where Message contains "AuditOldValue"
+| where isnotnull(ParsedData.AuditOldValue)
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",

@@ -1,6 +1,6 @@
 ZPA_CL
 | extend ParsedData = parse_json(Message)
-| where Message contains "SAMLAttributes"
+| where isnotnull(ParsedData.SAMLAttributes) 
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",
@@ -17,6 +17,7 @@ ZPA_CL
     Longitude = ParsedData.Longitude,
     CountryCode = ParsedData.CountryCode,
     TimestampAuthentication = ParsedData.TimestampAuthentication,
+    TimestampUnAuthentication = ParsedData.TimestampUnAuthentication,
     Idp = ParsedData.Idp,
     Platform = ParsedData.Platform,
     ClientType = ParsedData.ClientType,
