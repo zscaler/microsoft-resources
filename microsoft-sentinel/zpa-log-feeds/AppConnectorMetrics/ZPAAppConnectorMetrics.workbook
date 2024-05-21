@@ -1,0 +1,149 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "c3c6790f-1282-472c-be1d-05791a5c8a89",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 259200000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ZPAAppConnectorMetrics\n| extend ParsedData = parse_json(Message)\n| where isnotnull(ParsedData.AppCount)\n| extend RawLogTimestamp = todatetime(ParsedData.LogTimestamp)  // Keep the original datetime for filtering\n| where RawLogTimestamp >= ago(7d)\n| project LogTimestamp = format_datetime(RawLogTimestamp, 'yyyy-MM-dd'), Connector = tostring(ParsedData.Connector), TransmittedBytesToPublicSE = tolong(ParsedData.TransmittedBytesToPublicSE), ReceivedBytesFromPublicSE = tolong(ParsedData.ReceivedBytesFromPublicSE), TransmittedBytesToPrivateSE = tolong(ParsedData.TransmittedBytesToPrivateSE), ReceivedBytesFromPrivateSE = tolong(ParsedData.ReceivedBytesFromPrivateSE)\n| summarize TotalTransmittedBytesToPublicSE = sum(TransmittedBytesToPublicSE), TotalReceivedBytesFromPublicSE = sum(ReceivedBytesFromPublicSE), TotalTransmittedBytesToPrivateSE = sum(TransmittedBytesToPrivateSE), TotalReceivedBytesFromPrivateSE = sum(ReceivedBytesFromPrivateSE) by Connector, LogTimestamp\n| order by Connector, LogTimestamp asc\n\n\n\n",
+        "size": 2,
+        "title": "Data Transmission to Public and Private SE over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "Connector",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "TotalTransmittedBytesToPublicSE",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        },
+        "graphSettings": {
+          "type": 0,
+          "topContent": {
+            "columnMatch": "Connector",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "TotalTransmittedBytesToPublicSE",
+            "formatter": 1,
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "TotalTransmittedBytesToPublicSE",
+          "sizeAggregation": "Sum",
+          "legendMetric": "TotalTransmittedBytesToPublicSE",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "TotalTransmittedBytesToPublicSE",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "name": "query - 0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ZPAAppConnectorMetrics\n| extend ParsedData = parse_json(Message)\n| where isnotnull(ParsedData.AppCount)\n| project LogTimestamp = todatetime(ParsedData.LogTimestamp), ActiveConnectionsToPublicSE = toint(ParsedData.ActiveConnectionsToPublicSE), ActiveConnectionsToPrivateSE = toint(ParsedData.ActiveConnectionsToPrivateSE)\n| where LogTimestamp >= ago(30d)\n| summarize TotalActiveConnectionsToPublicSE = sum(ActiveConnectionsToPublicSE), TotalActiveConnectionsToPrivateSE = sum(ActiveConnectionsToPrivateSE) by bin(LogTimestamp, 1d)\n| order by LogTimestamp asc",
+        "size": 0,
+        "title": "Active Connections to Public and Private SE over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "query - 1"
+    }
+  ]}

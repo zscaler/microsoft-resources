@@ -1,0 +1,84 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "80ea3af7-e8e7-4a88-a514-f2186becc9ef",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 259200000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ZPA_CL\n| extend ParsedLog = parse_json(Message)\n| where isnotnull(ParsedLog.ServiceEdge)\n| project LogTimestamp = todatetime(ParsedLog.LogTimestamp), TotalBytesRx = tolong(ParsedLog.TotalBytesRx), TotalBytesTx = tolong(ParsedLog.TotalBytesTx), ServiceEdge = tostring(ParsedLog.ServiceEdge)\n| where LogTimestamp >= ago(30d)\n| summarize TotalBytesReceived = sum(TotalBytesRx), TotalBytesTransmitted = sum(TotalBytesTx) by ServiceEdge, LogDate = bin(LogTimestamp, 1d)\n| order by LogDate asc\n\n\n",
+        "size": 0,
+        "title": "Data Transer Over Time by PSE",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "timechart"
+      },
+      "name": "query - 1"
+    }
+  ]}

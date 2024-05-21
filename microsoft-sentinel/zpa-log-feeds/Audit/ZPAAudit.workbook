@@ -1,0 +1,97 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "4dbb53b6-10cc-45b3-89db-a8bd795e590f",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 259200000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ZPAAudit\n| extend ParsedData = parse_json(Message)\n| where isnotnull(ParsedData.AuditOldValue)\n| project ModifiedTime = todatetime(ParsedData.ModifiedTime), ObjectType = tostring(ParsedData.ObjectType)\n| where ModifiedTime >= ago(30d)\n| summarize ModificationCount = count() by ObjectType\n| order by ModificationCount desc",
+        "size": 3,
+        "title": "Count of Modifications by Object Type over Time",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart"
+      },
+      "name": "query - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "ZPAAudit\n| extend ParsedData = parse_json(Message)\n| where isnotnull(ParsedData.AuditOldValue)\n| project ModifiedTime = todatetime(ParsedData.ModifiedTime), User = tostring(ParsedData.User), AuditOldValue = tostring(ParsedData.AuditOldValue), AuditNewValue = tostring(ParsedData.AuditNewValue)\n| where ModifiedTime >= ago(30d)\n| summarize ChangeCount = count() by User, AuditOldValue, AuditNewValue\n| order by ChangeCount desc",
+        "size": 0,
+        "title": "Audit Value Changes by User",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 2"
+    }
+  ]}
