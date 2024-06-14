@@ -1,0 +1,1 @@
+{ "sourcetype" : "zscalernss-casb", "event" :{"datetime":"Thu May  2 00:45:57 2024","company":"Test CompanyInternal","login":"user@zscaler.net","tenant":"Test","dept":"Default Department","applicationname":"Test","threatname":"None","policy":"None","dlpdictnames":"None","dlpdictcount":"None","dlpenginenames":"None"}}
