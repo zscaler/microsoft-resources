@@ -5,13 +5,13 @@ Steps needed to deploy:
 1. Create an App Registration as per the Deployment Guide or Storylane demo
 2. Run this script from Azure CLI using the following command:
 
-    az stack group create --name cloud-nss-casbitsm --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-casbitsm.bicep --deny-settings-mode 'none'
+    az stack group create --name cloud-nss-casbitsm --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-casbitsm.bicep --deny-settings-mode 'none' --action-on-unmanage deleteResources
 
   You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item.
   
   Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-casbitsm.bicepparams file and running the following command in Azure CLI to deploy:
 
-    az stack group create --name cloud-nss-casbitsm --resource-group <resource group containing your log analytics workspace> --parameters cloud-nss-casbitsm.bicepparam --deny-settings-mode 'none'
+    az stack group create --name cloud-nss-casbitsm --resource-group <resource group containing your log analytics workspace> --parameters cloud-nss-casbitsm.bicepparam --deny-settings-mode 'none' --action-on-unmanage deleteResources
 
 3. Go to the DCR this bicep template creates -> IAM -> Add this DCR as a Monitoring Metrics Publisher for the App Registration you created earlier.
 4. Configure your Cloud NSS feed in the Zscaler Portal. You can retrieve the feed API URL using the following command in Azure CLI:
