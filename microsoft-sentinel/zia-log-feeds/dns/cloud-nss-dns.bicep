@@ -7,7 +7,7 @@ Steps needed to deploy:
 
     az stack group create --name cloud-nss-dns --resource-group <resource group containing your log analytics workspace> --template-file ./cloud-nss-dns.bicep --deny-settings-mode 'none' --action-on-unmanage deleteResources
 
-  You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item.
+  You will be prompted for parameters such as the resource group name and workspace id. You can enter ? and press enter to get a description of where to find each item. 
   
   Alternatively, you can specify these parameters ahead of time by populating the cloud-nss-dns.bicepparams file and running the following command in Azure CLI to deploy:
 
