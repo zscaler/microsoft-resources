@@ -1,5 +1,7 @@
 ZPA_CL
-| extend ParsedData = parse_json(Message)
+| extend JsonStart = indexof(Message, "{")
+| extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
+| extend ParsedData = parse_json(CleanMessage)
 | where isnotnull(ParsedData.Exporter)
 | project
     EventVendor="Zscaler",
@@ -41,4 +43,4 @@ ZPA_CL
     ConnectionReason = tostring(ParsedData.ConnectionReason),
     Origin = tostring(ParsedData.Origin),
     CorsToken = tostring(ParsedData.CorsToken),
-    Message = Message;
+    Message = CleanMessage;

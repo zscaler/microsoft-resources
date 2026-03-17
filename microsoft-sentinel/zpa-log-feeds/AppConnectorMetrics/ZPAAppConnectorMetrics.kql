@@ -1,5 +1,7 @@
 ZPA_CL
-| extend ParsedData = parse_json(Message)
+| extend JsonStart = indexof(Message, "{")
+| extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
+| extend ParsedData = parse_json(CleanMessage)
 | where isnotnull(ParsedData.AppCount)
 | project
     EventVendor="Zscaler",
@@ -34,4 +36,4 @@ ZPA_CL
     ProcessUsedFileDescriptors = ParsedData.ProcessUsedFileDescriptors, 
     AvailableDiskBytes = ParsedData.AvailableDiskBytes, 
     MicroTenantID = ParsedData.MicroTenantID,
-    Message = Message;
+    Message = CleanMessage;

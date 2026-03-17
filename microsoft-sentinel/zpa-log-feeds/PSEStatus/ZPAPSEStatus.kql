@@ -1,5 +1,7 @@
 ZPA_CL
-| extend ParsedLog = parse_json(Message)
+| extend JsonStart = indexof(Message, "{")
+| extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
+| extend ParsedLog = parse_json(CleanMessage)
 | where isnotnull(ParsedLog.ServiceEdge)
 | project
     EventVendor="Zscaler",
@@ -41,4 +43,4 @@ ZPA_CL
     TotalBytesRx = tolong(ParsedLog.TotalBytesRx),
     TotalBytesTx = tolong(ParsedLog.TotalBytesTx),
     MicroTenantID = tostring(ParsedLog.MicroTenantID),
-    Message = Message;
+    Message = CleanMessage;

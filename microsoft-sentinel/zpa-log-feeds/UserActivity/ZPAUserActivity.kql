@@ -1,5 +1,7 @@
 ZPA_CL
-| extend ParsedData = parse_json(Message)
+| extend JsonStart = indexof(Message, "{")
+| extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
+| extend ParsedData = parse_json(CleanMessage)
 | where isnotnull(ParsedData.PolicyProcessingTime) 
 | project
     EventVendor="Zscaler",
@@ -60,4 +62,4 @@ ZPA_CL
     ClientCity = tostring(ParsedData.ClientCity),
     MicroTenantID = tostring(ParsedData.MicroTenantID),
     AppMicroTenantID = tostring(ParsedData.AppMicroTenantID),
-    Message = Message;
+    Message = CleanMessage;

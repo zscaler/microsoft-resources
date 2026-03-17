@@ -1,6 +1,8 @@
 ZPA_CL
-| extend ParsedData = parse_json(Message)
-| where isnotnull(ParsedData.SAMLAttributes) 
+| extend JsonStart = indexof(Message, "{")
+| extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
+| extend ParsedData = parse_json(CleanMessage)
+| where isnotnull(ParsedData.ClientType)
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",
@@ -11,6 +13,7 @@ ZPA_CL
     SessionStatus = ParsedData.SessionStatus,
     Version = ParsedData.Version,
     ZEN = ParsedData.ZEN,
+    CertificateCN = ParsedData.CertificateCN,
     PrivateIP = ParsedData.PrivateIP,
     PublicIP = ParsedData.PublicIP,
     Latitude = ParsedData.Latitude,
@@ -18,9 +21,22 @@ ZPA_CL
     CountryCode = ParsedData.CountryCode,
     TimestampAuthentication = ParsedData.TimestampAuthentication,
     TimestampUnAuthentication = ParsedData.TimestampUnAuthentication,
+    TotalBytesRx = ParsedData.TotalBytesRx,
+    TotalBytesTx = ParsedData.TotalBytesTx,
     Idp = ParsedData.Idp,
+    Hostname = ParsedData.Hostname,
     Platform = ParsedData.Platform,
     ClientType = ParsedData.ClientType,
-    SAMLAttributes = tostring(ParsedData.SAMLAttributes), // Convert JSON object to string for presentation
+    TrustedNetworks = ParsedData.TrustedNetworks,
+    TrustedNetworksNames = ParsedData.TrustedNetworksNames,
+    PosturesHit = ParsedData.PosturesHit,
+    PosturesMiss = ParsedData.PosturesMiss,
+    ZENLatitude = ParsedData.ZENLatitude,
+    ZENLongitude = ParsedData.ZENLongitude,
+    ZENCountryCode = ParsedData.ZENCountryCode,
+    FQDNRegistered = ParsedData.FQDNRegistered,
+    FQDNRegisteredError = ParsedData.FQDNRegisteredError,
+    SAMLAttributes = tostring(ParsedData.SAMLAttributes),
     City = ParsedData.City,
-    Message = Message
+    MicroTenantID = ParsedData.MicroTenantID,
+    Message = CleanMessage
