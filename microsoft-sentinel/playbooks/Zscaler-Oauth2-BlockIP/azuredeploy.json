@@ -62,23 +62,6 @@
                         }
                     },
                     "actions":  {
-                        "Define_Base_URL":  {
-                            "runAfter":  {
-                                "Define_URL_Category":  [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type":  "InitializeVariable",
-                            "inputs":  {
-                                "variables":  [
-                                    {
-                                        "name":  "BaseURL",
-                                        "type":  "string",
-                                        "value":  "zsapi.zscaler.net/api/v1"
-                                    }
-                                ]
-                            }
-                        },
                         "Define_URL_Category":  {
                             "runAfter":  {
                                 "Entities_-_Get_IPs":  [
@@ -128,7 +111,7 @@
                                             "Authorization":  "Bearer @{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['access_token']}"
                                         },
                                         "method":  "PUT",
-                                        "uri":  "https://@{variables('BaseURL')}/urlCategories/@{variables('Category')}?action=ADD_TO_LIST"
+                                        "uri":  "https://@{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['base_url']}/urlCategories/@{variables('Category')}?action=ADD_TO_LIST"
                                     }
                                 }
                             },
@@ -158,6 +141,9 @@
                                         "access_token":  {
                                             "type":  "string"
                                         },
+                                        "base_url":  {
+                                            "type":  "string"
+                                        },
                                         "expires_in":  {
                                             "type":  "integer"
                                         },
@@ -174,7 +160,7 @@
                         },
                         "Zscaler-Oauth2-Authentication":  {
                             "runAfter":  {
-                                "Define_Base_URL":  [
+                                "Define_URL_Category":  [
                                     "Succeeded"
                                 ]
                             },

@@ -113,23 +113,6 @@
                             },
                             "type":  "If"
                         },
-                        "Define_Base_URL":  {
-                            "runAfter":  {
-                                "For_each_2":  [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type":  "InitializeVariable",
-                            "inputs":  {
-                                "variables":  [
-                                    {
-                                        "name":  "BaseURL",
-                                        "type":  "string",
-                                        "value":  "zsapi.zscalertwo.net/api/v1"
-                                    }
-                                ]
-                            }
-                        },
                         "Entities_-_Get_URLs":  {
                             "runAfter":  {
                                 "New_URL_List":  [
@@ -216,7 +199,7 @@
                                     "Authorization":  "Bearer @{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['access_token']}"
                                 },
                                 "method":  "GET",
-                                "uri":  "https://@{variables('BaseURL')}/security"
+                                "uri":  "https://@{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['base_url']}/security"
                             }
                         },
                         "HTTP":  {
@@ -233,7 +216,7 @@
                                     "Content-Type":  "application/json"
                                 },
                                 "method":  "PUT",
-                                "uri":  "https://@{variables('BaseURL')}/security"
+                                "uri":  "https://@{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['base_url']}/security"
                             }
                         },
                         "Initialize_variable":  {
@@ -352,6 +335,9 @@
                                         "access_token":  {
                                             "type":  "string"
                                         },
+                                        "base_url":  {
+                                            "type":  "string"
+                                        },
                                         "expires_in":  {
                                             "type":  "integer"
                                         },
@@ -381,7 +367,7 @@
                         },
                         "Zscaler-Oauth2-Authentication":  {
                             "runAfter":  {
-                                "Define_Base_URL":  [
+                                "For_each_2":  [
                                     "Succeeded"
                                 ]
                             },

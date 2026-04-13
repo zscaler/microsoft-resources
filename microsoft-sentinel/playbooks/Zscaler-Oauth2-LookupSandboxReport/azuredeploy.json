@@ -69,9 +69,6 @@
                     "actions":  {
                         "Entities_-_Get_FileHashes":  {
                             "runAfter":  {
-                                "Get_Base_URL":  [
-                                    "Succeeded"
-                                ]
                             },
                             "type":  "ApiConnection",
                             "inputs":  {
@@ -83,20 +80,6 @@
                                 },
                                 "method":  "post",
                                 "path":  "/entities/filehash"
-                            }
-                        },
-                        "Get_Base_URL":  {
-                            "runAfter":  {
-                            },
-                            "type":  "InitializeVariable",
-                            "inputs":  {
-                                "variables":  [
-                                    {
-                                        "name":  "BaseURL",
-                                        "type":  "string",
-                                        "value":  "zsapi.zscaler.net/api/v1"
-                                    }
-                                ]
                             }
                         },
                         "Get_MD5_Hash":  {
@@ -125,7 +108,7 @@
                                             "Authorization":  "Bearer @{body('Parse_JSON_2')?['access_token']}"
                                         },
                                         "method":  "GET",
-                                        "uri":  "https://@{variables('BaseURL')}/sandbox/report/@{body('Execute_JavaScript_Code')}?details=full"
+                                        "uri":  "https://@{body('Parse_JSON_2')?['base_url']}/sandbox/report/@{body('Execute_JavaScript_Code')}?details=full"
                                     }
                                 },
                                 "Parse_JSON":  {
@@ -168,6 +151,9 @@
                                         "schema":  {
                                             "properties":  {
                                                 "access_token":  {
+                                                    "type":  "string"
+                                                },
+                                                "base_url":  {
                                                     "type":  "string"
                                                 },
                                                 "expires_in":  {

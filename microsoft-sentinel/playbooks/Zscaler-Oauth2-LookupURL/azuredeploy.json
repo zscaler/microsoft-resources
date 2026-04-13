@@ -92,7 +92,7 @@
                                             "Authorization":  "Bearer @{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['access_token']}"
                                         },
                                         "method":  "POST",
-                                        "uri":  "https://@{variables('BaseURL')}/urlLookup"
+                                        "uri":  "https://@{body('Parse_Zscaler-Oauth2-Authentication_JSON_Response')?['base_url']}/urlLookup"
                                     }
                                 },
                                 "Parse_JSON":  {
@@ -144,23 +144,6 @@
                                 }
                             }
                         },
-                        "Initialize_variable":  {
-                            "runAfter":  {
-                                "Entities_-_Get_URLs":  [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type":  "InitializeVariable",
-                            "inputs":  {
-                                "variables":  [
-                                    {
-                                        "name":  "BaseURL",
-                                        "type":  "string",
-                                        "value":  "zsapi.zscaler.net/api/v1"
-                                    }
-                                ]
-                            }
-                        },
                         "Parse_Zscaler-Oauth2-Authentication_JSON_Response":  {
                             "runAfter":  {
                                 "Zscaler-Oauth2-Authentication":  [
@@ -173,6 +156,9 @@
                                 "schema":  {
                                     "properties":  {
                                         "access_token":  {
+                                            "type":  "string"
+                                        },
+                                        "base_url":  {
                                             "type":  "string"
                                         },
                                         "expires_in":  {
@@ -191,7 +177,7 @@
                         },
                         "Zscaler-Oauth2-Authentication":  {
                             "runAfter":  {
-                                "Initialize_variable":  [
+                                "Entities_-_Get_URLs":  [
                                     "Succeeded"
                                 ]
                             },
