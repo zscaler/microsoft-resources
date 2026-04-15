@@ -99,6 +99,13 @@
             "metadata": {
                 "description": "[[Legacy] OAuth2 scope — use the Application ID URI from your ZIA API Web Service Application appended with /.default (e.g., api://c0636925-82fa-49e1-be49-72afb0a9fd59/.default). Leave empty if using OneAPI mode."
             }
+        },
+        "ZscalerBaseUrl": {
+            "defaultValue": "zsapi.zscaler.net/api/v1",
+            "type": "string",
+            "metadata": {
+                "description": "[[Legacy] Zscaler ZIA API base URL (e.g., zsapi.zscalertwo.net/api/v1). Leave as default if using OneAPI mode."
+            }
         }
     },
     "variables": {
@@ -153,6 +160,10 @@
                         },
                         "scope": {
                             "defaultValue": "[parameters('OAuthScope')]",
+                            "type": "String"
+                        },
+                        "zscalerBaseUrl": {
+                            "defaultValue": "[parameters('ZscalerBaseUrl')]",
                             "type": "String"
                         }
                     },
@@ -240,7 +251,7 @@
                                 ]
                             },
                             "type": "Compose",
-                            "inputs": "@if(parameters('isOneAPI'), 'api.zsapi.net/zia/api/v1', 'zsapi.zscaler.net/api/v1')"
+                            "inputs": "@if(parameters('isOneAPI'), 'api.zsapi.net/zia/api/v1', parameters('zscalerBaseUrl'))"
                         },
                         "Build_Response_Body": {
                             "runAfter": {
@@ -322,6 +333,9 @@
                     },
                     "scope": {
                         "value": "[parameters('OAuthScope')]"
+                    },
+                    "zscalerBaseUrl": {
+                        "value": "[parameters('ZscalerBaseUrl')]"
                     }
                 }
             }

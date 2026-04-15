@@ -2,33 +2,64 @@
     "$schema":  "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion":  "1.0.0.0",
     "metadata":  {
-        "title":  "",
-        "description":  "",
-        "prerequisites":  "",
-        "postDeployment":  [
+        "title":  "Zscaler OAuth2 Unblacklist URL",
+        "description":  "This playbook removes URLs from the Zscaler security blacklist using OAuth2 authentication.",
+        "mainSteps":  [
+            "1. Gets URL entities from the incident",
+            "2. Uses the OAuth2 authentication playbook to acquire an access token",
+            "3. Removes URLs from the blacklistUrls list"
         ],
-        "prerequisitesDeployTemplateFile":  "",
-        "lastUpdateTime":  "",
+        "prerequisites":  [
+            "1. Deploy the Zscaler-Oauth2-Authentication playbook in the same resource group",
+            "2. Ensure the Logic App managed identity has Microsoft Sentinel Responder permissions"
+        ],
+        "postDeployment":  [
+            "**a. Authorize API connections**",
+            "Authorize the Microsoft Sentinel connection."
+        ],
+        "lastUpdateTime":  "2025-09-02T00:00:00.000Z",
         "entities":  [
+            "Url"
         ],
         "tags":  [
+            "Remediation"
         ],
         "support":  {
-            "tier":  "community",
-            "armtemplate":  "Generated from https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Playbook-ARM-Template-Generator"
+            "tier":  "Partner"
         },
         "author":  {
-            "name":  ""
-        }
+            "name":  "Zscaler"
+        },
+        "source":  {
+            "type":  "solution",
+            "name":  "Zscaler Internet Access"
+        },
+        "releaseNotes":  [
+            {
+                "version":  "1.0.0",
+                "title":  "Zscaler OAuth2 Unblacklist URL",
+                "notes":  [
+                    "Initial version"
+                ]
+            }
+        ]
     },
     "parameters":  {
         "PlaybookName":  {
             "defaultValue":  "Zscaler-Oauth2-UnblacklistURL",
             "type":  "string"
+        },
+        "Zscaler OAuth2 Authentication Playbook":  {
+            "defaultValue":  "Zscaler-Oauth2-Authentication",
+            "type":  "string",
+            "metadata":  {
+                "description":  "Name of the Zscaler OAuth2 Authentication Playbook"
+            }
         }
     },
     "variables":  {
-        "MicrosoftSentinelConnectionName":  "[concat('MicrosoftSentinel-', parameters('PlaybookName'))]"
+        "MicrosoftSentinelConnectionName":  "[concat('MicrosoftSentinel-', parameters('PlaybookName'))]",
+        "ZscalerAuthenticationFlow":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/', parameters('Zscaler OAuth2 Authentication Playbook'))]"
     },
     "resources":  [
         {
@@ -92,7 +123,7 @@
                                     "type":  "AppendToArrayVariable",
                                     "inputs":  {
                                         "name":  "NewURLlist",
-                                        "value":  "@body('Parse_JSON_2')?['url']"
+                                        "value":  "@{replace(replace(body('Parse_JSON_2')?['url'], 'https://', ''), 'http://', '')}"
                                     }
                                 },
                                 "Parse_JSON_2":  {
@@ -254,7 +285,7 @@
                                 "host":  {
                                     "triggerName":  "manual",
                                     "workflow":  {
-                                        "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/Zscaler-Oauth2-Authentication')]"
+                                        "id":  "[variables('ZscalerAuthenticationFlow')]"
                                     }
                                 }
                             }
@@ -272,7 +303,6 @@
                                 "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuresentinel')]",
                                 "connectionProperties":  {
                                     "authentication":  {
-                                        "identity":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/Zscaler-Oauth2-Authentication')]",
                                         "type":  "ManagedServiceIdentity"
                                     }
                                 }

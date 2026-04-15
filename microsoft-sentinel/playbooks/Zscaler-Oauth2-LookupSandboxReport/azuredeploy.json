@@ -2,44 +2,72 @@
     "$schema":  "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion":  "1.0.0.0",
     "metadata":  {
-        "title":  "",
-        "description":  "",
-        "prerequisites":  "",
-        "postDeployment":  [
+        "title":  "Zscaler OAuth2 Lookup Sandbox Report",
+        "description":  "This playbook looks up file hash sandbox reports in Zscaler using OAuth2 authentication.",
+        "mainSteps":  [
+            "1. Gets file hash entities from the incident",
+            "2. Extracts the MD5 hash from the entity",
+            "3. Uses the OAuth2 authentication playbook to acquire an access token",
+            "4. Looks up the sandbox report for the file hash"
         ],
-        "prerequisitesDeployTemplateFile":  "",
-        "lastUpdateTime":  "",
+        "prerequisites":  [
+            "1. Deploy the Zscaler-Oauth2-Authentication playbook in the same resource group",
+            "2. Create a Logic Apps Integration Account (Free tier) in the same resource group",
+            "3. Ensure the Logic App managed identity has Microsoft Sentinel Responder permissions"
+        ],
+        "postDeployment":  [
+            "**a. Authorize API connections**",
+            "Authorize the Microsoft Sentinel connection."
+        ],
+        "lastUpdateTime":  "2025-09-02T00:00:00.000Z",
         "entities":  [
+            "FileHash"
         ],
         "tags":  [
+            "Enrichment"
         ],
         "support":  {
-            "tier":  "community",
-            "armtemplate":  "Generated from https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Playbook-ARM-Template-Generator"
+            "tier":  "Partner"
         },
         "author":  {
-            "name":  ""
-        }
+            "name":  "Zscaler"
+        },
+        "source":  {
+            "type":  "solution",
+            "name":  "Zscaler Internet Access"
+        },
+        "releaseNotes":  [
+            {
+                "version":  "1.0.0",
+                "title":  "Zscaler OAuth2 Lookup Sandbox Report",
+                "notes":  [
+                    "Initial version"
+                ]
+            }
+        ]
     },
     "parameters":  {
         "PlaybookName":  {
             "defaultValue":  "Zscaler-Oauth2-LookupSandboxReport",
             "type":  "string"
+        },
+        "Zscaler OAuth2 Authentication Playbook":  {
+            "defaultValue":  "Zscaler-Oauth2-Authentication",
+            "type":  "string",
+            "metadata":  {
+                "description":  "Name of the Zscaler OAuth2 Authentication Playbook"
+            }
         }
     },
     "variables":  {
-        "MicrosoftSentinelConnectionName":  "[concat('MicrosoftSentinel-', parameters('PlaybookName'))]"
+        "MicrosoftSentinelConnectionName":  "[concat('MicrosoftSentinel-', parameters('PlaybookName'))]",
+        "ZscalerAuthenticationFlow":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/', parameters('Zscaler OAuth2 Authentication Playbook'))]"
     },
     "resources":  [
         {
             "properties":  {
                 "provisioningState":  "Succeeded",
                 "state":  "Enabled",
-                "integrationAccount":  {
-                    "name":  "Zscaler-Logicapp",
-                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/integrationAccounts/Zscaler-Logicapp')]",
-                    "type":  "Microsoft.Logic/integrationAccounts"
-                },
                 "definition":  {
                     "$schema":  "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
                     "contentVersion":  "1.0.0.0",
@@ -85,16 +113,14 @@
                         "Get_MD5_Hash":  {
                             "foreach":  "@body('Entities_-_Get_FileHashes')?['Filehashes']",
                             "actions":  {
-                                "Execute_JavaScript_Code":  {
+                                "Extract_Hash_Value":  {
                                     "runAfter":  {
                                         "Parse_JSON":  [
                                             "Succeeded"
                                         ]
                                     },
-                                    "type":  "JavaScriptCode",
-                                    "inputs":  {
-                                        "code":  "var str = workflowContext.actions.Parse_JSON.outputs.body.hashValue\r\nvar parsed = {};\r\nvar pairs = str.split(\";\");\r\nfor (var i = 0, len = pairs.length, keyVal; i \u003c len; ++i) {\r\n\tkeyVal = pairs[i].split(\"=\");\r\n\tif (keyVal[0]) {\r\n\t\tparsed[keyVal[0]] = keyVal[1];\r\n\t}\r\n}\r\n\r\n return parsed.md5hashcs6Label;"
-                                    }
+                                    "type":  "Compose",
+                                    "inputs":  "@replace(body('Parse_JSON')?['hashValue'], '-', '')"
                                 },
                                 "HTTP":  {
                                     "runAfter":  {
@@ -108,7 +134,7 @@
                                             "Authorization":  "Bearer @{body('Parse_JSON_2')?['access_token']}"
                                         },
                                         "method":  "GET",
-                                        "uri":  "https://@{body('Parse_JSON_2')?['base_url']}/sandbox/report/@{body('Execute_JavaScript_Code')}?details=full"
+                                        "uri":  "https://@{body('Parse_JSON_2')?['base_url']}/sandbox/report/@{outputs('Extract_Hash_Value')}?details=full"
                                     }
                                 },
                                 "Parse_JSON":  {
@@ -172,7 +198,7 @@
                                 },
                                 "Zscaler-Oauth2-Authentication_2":  {
                                     "runAfter":  {
-                                        "Execute_JavaScript_Code":  [
+                                        "Extract_Hash_Value":  [
                                             "Succeeded"
                                         ]
                                     },
@@ -181,7 +207,7 @@
                                         "host":  {
                                             "triggerName":  "manual",
                                             "workflow":  {
-                                                "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/Zscaler-Oauth2-Authentication')]"
+                                                "id":  "[variables('ZscalerAuthenticationFlow')]"
                                             }
                                         }
                                     }
@@ -207,7 +233,6 @@
                                 "id":  "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuresentinel')]",
                                 "connectionProperties":  {
                                     "authentication":  {
-                                        "identity":  "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Logic/workflows/Zscaler-Oauth2-Authentication')]",
                                         "type":  "ManagedServiceIdentity"
                                     }
                                 }
