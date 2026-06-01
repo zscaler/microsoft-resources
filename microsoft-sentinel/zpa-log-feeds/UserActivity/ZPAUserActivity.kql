@@ -1,12 +1,22 @@
+// Parse a ZPA timestamp field that may arrive as epoch seconds/ms/microseconds
+// (Cloud NSS DCR-ingest path) or as a strftime/ISO datetime string (VM/syslog path).
+let toDt = (x: dynamic) {
+    case(
+        isempty(tostring(x)),         datetime(null),
+        strlen(tostring(x)) == 10,    datetime(1970-01-01) + tolong(x) * 1s,           // epoch seconds (Cloud NSS LogTimestamp)
+        strlen(tostring(x)) == 13,    datetime(1970-01-01) + tolong(x) * 1ms,          // epoch milliseconds
+        strlen(tostring(x)) == 16,    datetime(1970-01-01) + (tolong(x) / 1000) * 1ms, // epoch microseconds (Cloud NSS Timestamp*) — divide first to avoid timespan overflow
+        todatetime(x))                                                                  // VM/syslog "Wed May 27 ..." or ISO 8601
+};
 ZPA_CL
 | extend JsonStart = indexof(Message, "{")
 | extend CleanMessage = iff(JsonStart >= 0, substring(Message, JsonStart), Message)
 | extend ParsedData = parse_json(CleanMessage)
-| where isnotnull(ParsedData.PolicyProcessingTime) 
+| where isnotnull(ParsedData.PolicyProcessingTime)
 | project
     EventVendor="Zscaler",
     EventProduct="Private Access",
-    LogTimestamp = todatetime(ParsedData.LogTimestamp),
+    LogTimestamp = toDt(ParsedData.LogTimestamp),
     Customer = tostring(ParsedData.Customer),
     SessionID = tostring(ParsedData.SessionID),
     ConnectionID = tostring(ParsedData.ConnectionID),
@@ -35,20 +45,20 @@ ZPA_CL
     ServerPort = toint(ParsedData.ServerPort),
     PolicyProcessingTime = toint(ParsedData.PolicyProcessingTime),
     ServerSetupTime = toint(ParsedData.ServerSetupTime),
-    TimestampConnectionStart = todatetime(ParsedData.TimestampConnectionStart),
-    TimestampConnectionEnd = todatetime(ParsedData.TimestampConnectionEnd),
-    TimestampCATx = todatetime(ParsedData.TimestampCATx),
-    TimestampCARx = todatetime(ParsedData.TimestampCARx),
-    TimestampAppLearnStart = todatetime(ParsedData.TimestampAppLearnStart),
-    TimestampZENFirstRxClient = todatetime(ParsedData.TimestampZENFirstRxClient),
-    TimestampZENFirstTxClient = todatetime(ParsedData.TimestampZENFirstTxClient),
-    TimestampZENLastRxClient = todatetime(ParsedData.TimestampZENLastRxClient),
-    TimestampZENLastTxClient = todatetime(ParsedData.TimestampZENLastTxClient),
-    TimestampConnectorZENSetupComplete = todatetime(ParsedData.TimestampConnectorZENSetupComplete),
-    TimestampZENFirstRxConnector = todatetime(ParsedData.TimestampZENFirstRxConnector),
-    TimestampZENFirstTxConnector = todatetime(ParsedData.TimestampZENFirstTxConnector),
-    TimestampZENLastRxConnector = todatetime(ParsedData.TimestampZENLastRxConnector),
-    TimestampZENLastTxConnector = todatetime(ParsedData.TimestampZENLastTxConnector),
+    TimestampConnectionStart = toDt(ParsedData.TimestampConnectionStart),
+    TimestampConnectionEnd = toDt(ParsedData.TimestampConnectionEnd),
+    TimestampCATx = toDt(ParsedData.TimestampCATx),
+    TimestampCARx = toDt(ParsedData.TimestampCARx),
+    TimestampAppLearnStart = toDt(ParsedData.TimestampAppLearnStart),
+    TimestampZENFirstRxClient = toDt(ParsedData.TimestampZENFirstRxClient),
+    TimestampZENFirstTxClient = toDt(ParsedData.TimestampZENFirstTxClient),
+    TimestampZENLastRxClient = toDt(ParsedData.TimestampZENLastRxClient),
+    TimestampZENLastTxClient = toDt(ParsedData.TimestampZENLastTxClient),
+    TimestampConnectorZENSetupComplete = toDt(ParsedData.TimestampConnectorZENSetupComplete),
+    TimestampZENFirstRxConnector = toDt(ParsedData.TimestampZENFirstRxConnector),
+    TimestampZENFirstTxConnector = toDt(ParsedData.TimestampZENFirstTxConnector),
+    TimestampZENLastRxConnector = toDt(ParsedData.TimestampZENLastRxConnector),
+    TimestampZENLastTxConnector = toDt(ParsedData.TimestampZENLastTxConnector),
     ZENTotalBytesRxClient = toint(ParsedData.ZENTotalBytesRxClient),
     ZENBytesRxClient = toint(ParsedData.ZENBytesRxClient),
     ZENTotalBytesTxClient = toint(ParsedData.ZENTotalBytesTxClient),
