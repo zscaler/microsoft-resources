@@ -71,7 +71,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "ZPAAppConnectorStatus\n| extend ParsedData = parse_json(Message)\n| where isnotnull(ParsedData.ConnectorGroup)\n| project RawLogTimestamp = todatetime(ParsedData.LogTimestamp), LogTimestamp = format_datetime(todatetime(ParsedData.LogTimestamp), 'yyyy-MM-dd'), TotalBytesRx = tolong(ParsedData.TotalBytesRx), TotalBytesTx = tolong(ParsedData.TotalBytesTx), Connector = tostring(ParsedData.Connector)\n| summarize TotalBytesReceived = sum(TotalBytesRx), TotalBytesTransmitted = sum(TotalBytesTx) by Connector, LogTimestamp\n| order by Connector, LogTimestamp asc\n",
+        "query": "ZPAAppConnectorStatus\n| summarize TotalBytesReceived = sum(TotalBytesRx), TotalBytesTransmitted = sum(TotalBytesTx) by Connector, LogDate = bin(LogTimestamp, 1d)\n| order by Connector, LogDate asc\n",
         "size": 0,
         "title": "Data Transfer Over Time",
         "timeContextFromParameter": "TimeRange",
@@ -85,7 +85,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "ZPAAppConnectorStatus\n| extend ParsedData = parse_json(Message)\n| project LogTimestamp = todatetime(ParsedData.LogTimestamp), ZEN = tostring(ParsedData.ZEN)\n| summarize ConnectionCount = count() by ZEN\n| order by ZEN asc",
+        "query": "ZPAAppConnectorStatus\n| summarize ConnectionCount = count() by ZEN\n| order by ZEN asc",
         "size": 0,
         "title": "List of ZEN Nodes and Connection Counts",
         "timeContextFromParameter": "TimeRange",
